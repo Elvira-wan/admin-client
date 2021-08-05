@@ -8,7 +8,7 @@ const { SubMenu } = Menu;
 
 class LeftNav extends Component {
     getMenuNodes = (menuList) => {
-        const path = this.props.location.pathname
+        const path = this.props.location.pathname;
         return menuList.map(item => {
             if (!item.children) {
                 return (
@@ -48,9 +48,13 @@ class LeftNav extends Component {
     render() {
         const selectKey = this.props.location.pathname;
         const openKey = this.openKey;
-        console.log(openKey, selectKey)
         return (
-            <Menu theme="dark" selectedKeys={[selectKey]} defaultSelectedKeys={[openKey]} mode="inline">
+            <Menu 
+                theme="dark" 
+                selectedKeys={[selectKey]} 
+                defaultOpenKeys={[openKey]} 
+                mode="inline"
+            >
                 {
                     this.menuNodes
                 }

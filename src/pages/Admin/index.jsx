@@ -47,18 +47,18 @@ export default class Admin extends Component {
                     <LeftNav />
                 </Sider>
                 <Layout>
-                    <Header className="site-layout-background" style={{ padding: 0 }}>Header</Header>
+                    <Header className="site-layout-background">Header</Header>
                     <Content style={{ margin: '0 16px' }}>
                         <div style={{ padding: 24, background: '#fff', minHeight: 360 }}>
                             <Switch>
-                                <Route to='/home' component={Home} />
-                                <Route to='/category' component={Category} />
-                                <Route to='/product' component={Product} />
-                                <Route to='/role' component={Role} />
-                                <Route to='/user' component={User} />
-                                <Route to='/charts/bar' component={Bar} />
-                                <Route to='/charts/line' component={Line} />
-                                <Route to='/charts/pie' component={Pie} />
+                                <Route path='/home' component={Home} />
+                                <Route path='/category' component={Category} />
+                                <Route path='/product' component={Product} />
+                                <Route path='/role' component={Role} />
+                                <Route path='/user' component={User} />
+                                <Route path='/charts/bar' component={Bar} />
+                                <Route path='/charts/line' component={Line} />
+                                <Route path='/charts/pie' component={Pie} />
                                 <Redirect to='/home'></Redirect>
                             </Switch>
                         </div>
