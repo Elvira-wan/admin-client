@@ -46,7 +46,13 @@ class LeftNav extends Component {
     }
 
     render() {
-        const selectKey = this.props.location.pathname;
+        // 解决商品详情页path不相等导致无法选中Link的问题
+        let path = this.props.location.pathname;
+        if (path.indexOf('/product') === 0) {
+            // 当前页面为商品或商品子路由界面
+            path = '/product';
+        }
+        const selectKey = path;
         const openKey = this.openKey;
         return (
             <Menu 

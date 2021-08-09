@@ -20,3 +20,22 @@ export const reqCategory = (parentId) => ajax('/manage/category/list', {parentId
 export const reqAddCategory = (parentId, categoryName) => ajax('/manage/category/add', {parentId, categoryName}, 'POST');
 // 更新品类名称，两种传参方式 ———— 从对象中解构
 export const reqUpdateCategory = ({categoryId,categoryName}) => ajax('/manage/category/update', {categoryId, categoryName}, 'POST');
+
+// 根据分类ID获取分类
+export const reqCategoryFromId = (categoryId) => ajax('/manage/category/info', {categoryId});
+// 获取商品分页列表
+export const reqProuductList = (pageNum, pageSize) => ajax('/manage/product/list', {pageNum, pageSize});
+// 通过Name获取商品
+export const reqSearchProduct = ({pageNum, pageSize, searchType, searchName}) => ajax('/manage/product/search', {
+    pageNum,
+    pageSize,
+    [searchType]: searchName
+});
+// 添加/更新商品
+export const reqAddOrUpdateProduct = product => ajax('/manage/product/' + (product._id ? 'update' : 'add') , {product}, 'POST');
+// 对商品进行上下架处理
+export const reqUpdateProductState = (productId, status) => ajax('/manage/product/updateStatus', {productId, status}, 'POST');
+// 上传商品图片
+export const reqAddProductImg = img => ajax('manage/img/upload', img, 'POST')
+// 删除商品图片
+export const reqDeleteProductImg = img => ajax('manage/img/delete', img, 'POST')

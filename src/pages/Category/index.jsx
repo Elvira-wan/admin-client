@@ -161,7 +161,6 @@ export default class Category extends Component {
     render() {
         // 解构state中数据
         const { dataSource, subCategory, parentId, parentName, loading, confirmLoading, showLinkButton } = this.state
-        console.log(parentId)
         // Card显示内容
         // Card 左侧标题
         const title = parentId === '0' ? '一级分类列表' : (
