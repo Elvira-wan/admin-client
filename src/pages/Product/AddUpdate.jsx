@@ -4,6 +4,7 @@ import {
     Cascader,
     Form,
     Input,
+    Button,
     message,
 } from 'antd';
 import {
@@ -11,13 +12,19 @@ import {
 } from '@ant-design/icons'
 // 引入请求方式
 import {
-    reqCategory
+    reqCategory,
+    reqAddOrUpdateProduct
 } from '../../api/index'
+import PicturesWall from './PictrueWall.jsx';
+import RichTextEditor from './RichTextEditor';
 
 export default class ProductAddUpdate extends Component {
     state = {
         options: []        // 级联下拉框的一级下拉列表
     }
+    formRef = React.createRef();
+    picRef = React.createRef();
+    detailRef = React.createRef();
 
     // 从详情页回退到home
     handleBack = () => {
@@ -34,28 +41,25 @@ export default class ProductAddUpdate extends Component {
             isLeaf: false       // 是否是叶子节点，无法判断其是否有子类，因此统一设置为有
         }))
         // 解决修改商品时二级级联列表不默认显示的问题
-        const { product, isUpdate } = this;
-        const {pCategoryId} = product;
-        // 若为修改商品且商品处于二级分类下
+        const { isUpdate, product } = this
+        const { pCategoryId, categoryId } = product;
         if (isUpdate && pCategoryId !== '0') {
-            // 异步获取二级分类级联
-            const subData = await this.getCategory(pCategoryId);
-            // debugger;
-            if (subData && subData.length > 0) {
-                const subCategory = subData.map(c => ({
-                    value: c._id,
-                    name: c.name,
-                    isLeaf: true
-                }))
-                // 找到对应的targetOption，并存入对应子级联
+            // 修改商品界面，获取其二级级联，显示默认值
+            this.setState({ options }, async () => {
                 const targetOption = options.find(category => category.value === pCategoryId);
-                targetOption.children = subCategory;
-            }
-            // 更新状态
+                await this.loadData([targetOption]);
+                this.formRef.current.setFieldsValue({
+                    categoryIds: [pCategoryId, categoryId]
+                })
+            })
+        } else {
+            // 添加商品页面直接渲染其一级级联
+            this.setState({ options }, () => {
+                this.formRef.current.setFieldsValue({
+                    categoryIds: [categoryId]
+                })
+            });
         }
-        this.setState({ options }, () => {
-            console.log(this.state)
-        })
     }
     // 获取所有一级或二级分类
     getCategory = async (parentId) => {
@@ -95,10 +99,50 @@ export default class ProductAddUpdate extends Component {
             targetOption.isLeaf = true;
         }
         // 更新option状态
-        this.setState({ options: [...this.state.options] }, () => {
-            console.log(this.state)
-        })
+        this.setState({ options: [...this.state.options] })
     };
+
+    // 提交表单回调事件
+    handleSubmit = async () => {
+        const {formRef, picRef, detailRef, product, isUpdate} = this;
+        try {
+            const {name, desc, price, categoryIds} = await formRef.current.validateFields();
+
+            // 错误写法：
+            // const pCategoryId = categoryIds[0];
+            // const CategoryId = categoryIds[1];
+
+            // 若商品为一级分类
+            let pCategoryId, categoryId;
+            if (categoryIds.length === 1) {
+                pCategoryId = '0';
+                categoryId = categoryIds[0]
+            } else {
+                pCategoryId = categoryIds[0];
+                categoryId = categoryIds[1];
+            }
+            const imgs = picRef.current.getImgs()
+            const detail = detailRef.current.getDetail()
+            // 创建提交的产品对象
+            const productObj = {pCategoryId, categoryId, name, desc, price, imgs, detail};
+            // 若此时为修改商品界面，则传入id值
+            if (isUpdate && product._id) {
+                const {_id} = product;
+                // 注意：这里使用方括号来读取变量名时，必须为变量名打冒号，否则方括号中的值会被识别为一个变量
+                productObj['_id'] = _id
+
+            }
+            const result = await reqAddOrUpdateProduct(productObj);
+            if (result.status === 0) {
+                message.success('保存商品成功');
+                this.props.history.goBack();
+            } else {
+                message.success('表单提交出现异常，请稍后重试');
+            }
+        } catch(err) {
+            message.error('表单验证失败');
+        }
+    }
 
     UNSAFE_componentWillMount() {
         const product = this.props.location.state;
@@ -109,22 +153,9 @@ export default class ProductAddUpdate extends Component {
         this.getCategory('0')
     }
     render() {
-        const { product, isUpdate } = this;
-        const { pCategoryId, categoryId, imgs, detail } = product;
-        const {options} = this.state;
-
-        // 准备用于级联列表显示的数组
-        const categoryIds = [];
-        if (isUpdate) {
-            // 若当前商品为一级分类
-            if (pCategoryId === '0') {
-                categoryIds.push(categoryId);
-            } else {
-                categoryIds.push(pCategoryId);
-                categoryIds.push(categoryId);
-            }
-        }
-
+        const { product, isUpdate, formRef, picRef, detailRef } = this;
+        const { name, desc, price, imgs, detail } = product;
+        const { options } = this.state;
         const title = (
             <>
                 <ArrowLeftOutlined className='backArrow' onClick={this.handleBack} />
@@ -142,11 +173,12 @@ export default class ProductAddUpdate extends Component {
                         span: 10,
                     }}
                     labelAlign='left'
+                    ref={formRef}
                 >
                     <Form.Item
                         label="商品名称"
                         name='name'
-                        initialValue={product.name}
+                        initialValue={name}
                         rules={[
                             {
                                 required: true,
@@ -159,12 +191,12 @@ export default class ProductAddUpdate extends Component {
                     <Form.Item
                         label="商品描述"
                         name='desc'
-                        initialValue={product.desc}
+                        initialValue={desc}
                         rules={[
                             {
                                 required: true,
                                 message: '请输入商品描述！',
-                            },
+                            }
                         ]}
                     >
                         <Input.TextArea />
@@ -172,14 +204,11 @@ export default class ProductAddUpdate extends Component {
                     <Form.Item
                         label="商品价格"
                         name='price'
-                        initialValue={product.price}
+                        initialValue={price}
                         rules={[
                             {
                                 required: true,
                                 message: '请输入商品价格！',
-                            }, {
-                                min: 0,
-                                message: '价格必须为有效数字！'
                             }
                         ]}
                     >
@@ -188,18 +217,35 @@ export default class ProductAddUpdate extends Component {
                     <Form.Item
                         label="商品分类"
                         name='categoryIds'
-                        initialValue={categoryIds}
+                        // initialValue={categoryIds}       // 使用setFieldValue后就无需使用initialValue再设置初始值
                         rules={[
                             {
                                 required: true,
-                                message: '请输入商品名称！',
+                                message: '请输入商品分类！',
                             },
                         ]}
                     >
                         <Cascader
-                            options={this.state.options}
+                            options={options}
                             loadData={this.loadData}
                         />
+                    </Form.Item>
+                    <Form.Item
+                        label="商品图片"
+                        name='imgs'
+                    >
+                        <PicturesWall ref={picRef} imgs={imgs} />
+                    </Form.Item>
+                    <Form.Item
+                        label="商品详情"
+                        name='detail'
+                    >
+                        <RichTextEditor ref={detailRef} detail={detail} />
+                    </Form.Item>
+                    <Form.Item style={{marginTop: 100}} wrapperCol={{ offset: 3, span: 8}}>
+                        <Button type="primary" htmlType="submit" onClick={this.handleSubmit} block>
+                            提&nbsp;&nbsp;&nbsp;&nbsp;交
+                        </Button>
                     </Form.Item>
                 </Form>
             </Card>

@@ -8,9 +8,6 @@ import ajax from "./ajax";
 // 登录接口请求函数
 export const reqLogin =  (username, password) => ajax('/login', {username, password}, 'POST');
 
-// 添加用户
-export const reqAddUser = (user) => ajax('/manage/user/add', user, 'POST');
-
 // 天气更新
 export const reqWeather = () => ajax('https://restapi.amap.com/v3/weather/weatherInfo?city=360111&key=73e3121f8a251a23b0120317c455c46b');
 
@@ -32,10 +29,22 @@ export const reqSearchProduct = ({pageNum, pageSize, searchType, searchName}) =>
     [searchType]: searchName
 });
 // 添加/更新商品
-export const reqAddOrUpdateProduct = product => ajax('/manage/product/' + (product._id ? 'update' : 'add') , {product}, 'POST');
+export const reqAddOrUpdateProduct = product => ajax('/manage/product/' + (product._id ? 'update' : 'add') , product, 'POST');
 // 对商品进行上下架处理
 export const reqUpdateProductState = (productId, status) => ajax('/manage/product/updateStatus', {productId, status}, 'POST');
-// 上传商品图片
-export const reqAddProductImg = img => ajax('manage/img/upload', img, 'POST')
 // 删除商品图片
-export const reqDeleteProductImg = img => ajax('manage/img/delete', img, 'POST')
+export const reqDeleteProductImg = name => ajax('/manage/img/delete', {name}, 'POST')
+
+
+// 请求用户列表
+export const reqUser = () => ajax('/manage/user/list')
+// 添加/更新用户
+export const reqAddUpdateUser = (user) => ajax('/manage/user/' + (user._id ? '/update' : 'add'), user, 'POST');
+// 删除用户
+export const reqDelectUser = userId => ajax('/manage/user/delete', {userId}, 'POST');
+// 请求角色列表
+export const reqRole = () => ajax('/manage/role/list');
+// 添加角色
+export const reqAddRole = roleName => ajax('manage/role/add', {roleName}, 'POST');
+// 更新角色
+export const reqUpdateRole = role => ajax('manage/role/update', role, 'POST');

@@ -46,6 +46,10 @@ class Header extends Component {
                 title = item.title;
             } else if (item.children) {
                 item.children.forEach(citem => {
+                    // 在点击商品管理二级路由时，确保header正常显示
+                    if (path.indexOf('/product') === 0) {
+                        path = '/product';
+                    };
                     if (citem.key === path) {
                         title = citem.title;
                     }

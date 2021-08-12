@@ -79,7 +79,6 @@ export default class ProductHome extends Component {
     // Table页改变回调：重新请求数据
     pageChange = (pageNum, pageSize) => {
         this.getProduct(pageNum, pageSize);
-        console.log(this.state);
     }
 
     // 挂载组件前渲染表格列名
@@ -93,16 +92,18 @@ export default class ProductHome extends Component {
             {
                 title: '商品描述',
                 dataIndex: 'desc',
-                key: 'desc'
+                key: 'desc',
+                width: '40%'
             },
             {
                 title: '价格',
-                dataIndex: 'price',
+                dataIndex: 'price', 
                 key: 'price'
             },
             {
                 title: '状态',
                 key: 'state',
+                width: '13%',
                 render: (product) => (
                     <>
                         <span style={{fontSize: 13, width: 50, marginBottom: '5px', display: 'inline-block'}}>{product.status ? '在售' : '已下架'}</span>

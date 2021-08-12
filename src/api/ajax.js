@@ -20,7 +20,7 @@ export default (url, data = {}, type='GET') => {
             })
         } else {
             // axios.post()第二个参数为请求对象
-            Promise = axios.post(url, data);
+            Promise = axios.post(url, data)
         }
 
         Promise.then(response => {
