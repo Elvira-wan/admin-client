@@ -28,7 +28,7 @@ export default class Line extends Component {
   getOption = (sales, stores) => {
     return {
       title: {
-        text: 'ECharts 入门示例'
+        text: '当前商品库存量'
       },
       tooltip: {},
       legend: {

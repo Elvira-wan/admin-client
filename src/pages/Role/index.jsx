@@ -57,16 +57,20 @@ export default class Role extends Component {
     }
     // 添加回调函数
     handleAdd = async () => {
-        const { roleName } = await this.formRef.current.validateFields();
-        this.setState({ confirmLoading: true })
-        const { status } = await reqAddRole(roleName);
-        if (status === 0) {
-            this.getRoles();
-            this.setState({ confirmLoading: false, visible: false });
-            message.success('添加对象成功');
-        } else {
-            console.log(status)
-            message.error('添加对象失败');
+        try {
+            const { roleName } = await this.formRef.current.validateFields();
+            this.setState({ confirmLoading: true })
+            const { status } = await reqAddRole(roleName);
+            if (status === 0) {
+                this.getRoles();
+                this.setState({ confirmLoading: false, visible: false });
+                message.success('添加对象成功');
+            } else {
+                console.log(status)
+                message.error('添加对象失败');
+            }
+        } catch {
+            message.error('表单验证失败');
         }
     }
     // 更新回调函数
@@ -87,7 +91,6 @@ export default class Role extends Component {
         } else {
             message.error('修改角色权限失败');
         }
-
     }
     // 选中Tree中复选框的默认事件
     handleCheck = (menus) => {
@@ -106,7 +109,7 @@ export default class Role extends Component {
                 } else if (menu === '/product' || menu === '/category') {
                     expandedKeys.push('/products');
                 }
-
+                return expandedKeys;
             });
         }
         this.setState({expandedKeys}, () => {

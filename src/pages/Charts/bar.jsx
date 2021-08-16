@@ -1,5 +1,5 @@
-import React, {Component} from 'react'
-import {Card, Button} from 'antd'
+import React, { Component } from 'react'
+import { Card, Button } from 'antd'
 import ReactEcharts from 'echarts-for-react'
 
 /*
@@ -16,7 +16,7 @@ export default class Bar extends Component {
     this.setState(state => ({
       sales: state.sales.map(sale => sale + 1),
       stores: state.stores.reduce((pre, store) => {
-        pre.push(store-1)
+        pre.push(store - 1)
         return pre
       }, []),
     }))
@@ -32,26 +32,30 @@ export default class Bar extends Component {
       },
       tooltip: {},
       legend: {
-        data:['销量', '库存']
+        data: ['销量', '库存']
       },
       xAxis: {
-        data: ["衬衫","羊毛衫","雪纺衫","裤子","高跟鞋","袜子"]
+        data: ["衬衫", "羊毛衫", "雪纺衫", "裤子", "高跟鞋", "袜子"]
       },
       yAxis: {},
-      series: [{
-        name: '销量',
-        type: 'bar',
-        data: sales
-      }, {
-        name: '库存',
-        type: 'bar',
-        data: stores
-      }]
+      series: [
+        {
+          name: '销量',
+          type: 'bar',
+          data: sales,
+          barWidth: 29
+        }, {
+          name: '库存',
+          type: 'bar',
+          data: stores,
+          barWidth: 29
+        },
+      ]
     }
   }
 
   render() {
-    const {sales, stores} = this.state
+    const { sales, stores } = this.state
     return (
       <div>
         <Card>

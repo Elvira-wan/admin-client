@@ -43,7 +43,8 @@ export default class Login extends Component {
             })
             .catch(errorInfo => {
                 // 统一验证的错误：errorInfo为一个对象
-                console.log(errorInfo)
+                // console.log(errorInfo)
+                message.error('账号密码不符合要求！');
             });
 
     }
