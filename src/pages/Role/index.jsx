@@ -1,4 +1,5 @@
-import React, { Component } from 'react'
+import React, { Component } from 'react';
+import {connect} from 'react-redux';
 import {
     Card,
     Table,
@@ -8,17 +9,19 @@ import {
     Input,
     Tree,
     message
-} from 'antd'
-import { PlusOutlined } from '@ant-design/icons'
-import { PAGE_SIZE } from '../../utils/constants'
-import { reqAddRole, reqRole, reqUpdateRole } from '../../api'
-import menuList from '../../config/menuConfig.jsx'
-import { formateDate } from '../../utils/dateUtils'
-import memoryUtils from '../../utils/memoryUtils'
+} from 'antd';
+import { PlusOutlined } from '@ant-design/icons';
+import { PAGE_SIZE } from '../../utils/constants';
+import { reqAddRole, reqRole, reqUpdateRole } from '../../api';
+import { formateDate } from '../../utils/dateUtils';
+import { logout } from '../../redux/action';
+import menuList from '../../config/menuConfig.jsx';
+// 本来要从其中读取auth_name，现在可以直接从redux中读取
+// import memoryUtils from '../../utils/memoryUtils';
 
-export default class Role extends Component {
+class Role extends Component {
     state = {
-        roles: [],
+        roles: [],           // 所有角色的列表
         currentRole: {},     // 当前单选框选中的节点
         menuList: [{
             title: '平台权限',
@@ -31,7 +34,8 @@ export default class Role extends Component {
         visible: false,             // 0:都不显示，1:显示添加，2:显示增加
         expandedKeys: []            // Tree结构中的指定展开节点
     }
-    role = {};
+
+    // role = {};
 
     formRef = React.createRef();
 
@@ -62,11 +66,12 @@ export default class Role extends Component {
             this.setState({ confirmLoading: true })
             const { status } = await reqAddRole(roleName);
             if (status === 0) {
+                // 更新页面
                 this.getRoles();
+                // 取消弹窗显示
                 this.setState({ confirmLoading: false, visible: false });
                 message.success('添加对象成功');
             } else {
-                console.log(status)
                 message.error('添加对象失败');
             }
         } catch {
@@ -77,17 +82,22 @@ export default class Role extends Component {
     handleUpdate = async () => {
         this.setState({ confirmLoading: true })
 
-        const auth_name = memoryUtils.user.username;
+        const auth_name = this.props.user.username;
         const auth_time = new Date().getTime();
         let {currentRole: {_id, menus}} = this.state;
         const role = {_id, menus, auth_name, auth_time};
 
         const {status} = await reqUpdateRole(role);
-        console.log(status);
         if (status === 0) {
-            this.getRoles();
-            this.setState({ confirmLoading: false, visible: false });
-            message.success('修改角色权限成功');
+            // 若当前更新的是自己的角色权限，则强制退出
+            if (role._id === this.props.user.role_id) {
+                this.props.logout();
+                message.success('修改当前用户角色权限成功, 请重新登录以更新');
+            } else {
+                this.getRoles();
+                this.setState({ confirmLoading: false, visible: false });
+                message.success('修改角色权限成功');
+            }
         } else {
             message.error('修改角色权限失败');
         }
@@ -173,6 +183,16 @@ export default class Role extends Component {
                             });
                         }
                     }}
+                    onRow={currentRole => {
+                        return {
+                            onClick: event => {
+                                console.log(currentRole, this.selectedRows)
+                                console.log(event);
+                                event.checked = true
+                                this.setState({currentRole})
+                            }
+                        }
+                    }}
                     dataSource={roles}
                     columns={columns}
                     rowKey='_id'
@@ -250,3 +270,10 @@ export default class Role extends Component {
         )
     }
 }
+
+export default connect(
+    state => ({user: state.user}),
+    {
+        logout
+    }
+)(Role);

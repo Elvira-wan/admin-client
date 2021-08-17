@@ -1,7 +1,6 @@
 import React, { Component } from "react"
 
 import { Chart, Line, Point, Tooltip, Legend } from 'bizcharts';
-import DataSet from "@antv/data-set"
 
 export default class LineChart extends Component {
   render() {

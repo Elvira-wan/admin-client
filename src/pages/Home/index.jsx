@@ -72,7 +72,7 @@ export default class Home extends Component {
             <span className={isVisited ? "" : 'home-menu-active'} onClick={this.handleChange(false)}>销售量</span>
           </div>}
           extra={<RangePicker
-            defaultValue={[moment('2019/01/01', dateFormat), moment('2019/06/01', dateFormat)]}
+            defaultValue={[moment('2021/07/30', dateFormat), moment('2021/08/16', dateFormat)]}
             format={dateFormat}
           />}
         >

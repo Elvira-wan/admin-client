@@ -18,7 +18,7 @@ export default class ProductDetail extends Component {
     }
     // 异步获取当前产品对应的分类名称
     getCategoryName = async () => {
-        const { categoryId, pCategoryId } = this.props.location.state;
+        const { categoryId, pCategoryId } = this.props.location.state || {};
         // 如果处在一级分类下
         if (pCategoryId === '0') {
             const result = await reqCategoryFromId(categoryId);
@@ -48,7 +48,7 @@ export default class ProductDetail extends Component {
                 <span>商品详情</span>
             </>
         )
-        const { name, desc, price, imgs, detail } = this.props.location.state;
+        const { name, desc, price, imgs, detail } = this.props.location.state || {};
         const { cName, cSonName } = this.state; 
         return (
             <Card title={title} className='product-detail'>
@@ -71,7 +71,7 @@ export default class ProductDetail extends Component {
                     </List.Item>
                     <List.Item>
                         <span className='left'>商品图片:</span>
-                        <span> {imgs.map(img => (<img src={BASE_IMG_PATH + img} alt="img" key={img} style={{ width: 150, height: 150, marginRight: 10, border: '1px solid black' }} />))} </span>
+                        {imgs === undefined ? null : <span> {imgs.map(img => (<img src={BASE_IMG_PATH + img} alt="img" key={img} style={{ width: 150, height: 150, marginRight: 10, border: '1px solid black' }} />))} </span>} 
                     </List.Item>
                     <List.Item>
                         <span className='left'>商品详情:</span>

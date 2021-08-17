@@ -31,6 +31,15 @@ export default class ProductAddUpdate extends Component {
         console.log(this.props)
         this.props.history.goBack();
     }
+    // 对价格表单进行自定义验证
+    validatePrice = (rule, value, callback) => { 
+        value = value * 1;
+        if (value > 0) { 
+            callback() 
+        } else { 
+            callback('价格必须是大于 0 的数值') 
+        } 
+    };
 
     // 初始化级联列表
     initOptions = async (data) => {
@@ -104,9 +113,9 @@ export default class ProductAddUpdate extends Component {
 
     // 提交表单回调事件
     handleSubmit = async () => {
-        const {formRef, picRef, detailRef, product, isUpdate} = this;
+        const { formRef, picRef, detailRef, product, isUpdate } = this;
         try {
-            const {name, desc, price, categoryIds} = await formRef.current.validateFields();
+            const { name, desc, price, categoryIds } = await formRef.current.validateFields();
 
             // 错误写法：
             // const pCategoryId = categoryIds[0];
@@ -124,10 +133,10 @@ export default class ProductAddUpdate extends Component {
             const imgs = picRef.current.getImgs()
             const detail = detailRef.current.getDetail()
             // 创建提交的产品对象
-            const productObj = {pCategoryId, categoryId, name, desc, price, imgs, detail};
+            const productObj = { pCategoryId, categoryId, name, desc, price, imgs, detail };
             // 若此时为修改商品界面，则传入id值
             if (isUpdate && product._id) {
-                const {_id} = product;
+                const { _id } = product;
                 // 注意：这里使用方括号来读取变量名时，必须为变量名打冒号，否则方括号中的值会被识别为一个变量
                 productObj['_id'] = _id
 
@@ -139,7 +148,7 @@ export default class ProductAddUpdate extends Component {
             } else {
                 message.success('表单提交出现异常，请稍后重试');
             }
-        } catch(err) {
+        } catch (err) {
             message.error('表单验证失败');
         }
     }
@@ -209,7 +218,8 @@ export default class ProductAddUpdate extends Component {
                             {
                                 required: true,
                                 message: '请输入商品价格！',
-                            }
+                            },
+                            { validator: this.validatePrice }
                         ]}
                     >
                         <Input type='number' prefix="￥" suffix="RMB" style={{ width: '100%' }} />
@@ -242,7 +252,7 @@ export default class ProductAddUpdate extends Component {
                     >
                         <RichTextEditor ref={detailRef} detail={detail} />
                     </Form.Item>
-                    <Form.Item style={{marginTop: 100}} wrapperCol={{ offset: 3, span: 8}}>
+                    <Form.Item style={{ marginTop: 100 }} wrapperCol={{ offset: 3, span: 8 }}>
                         <Button type="primary" htmlType="submit" onClick={this.handleSubmit} block>
                             提&nbsp;&nbsp;&nbsp;&nbsp;交
                         </Button>

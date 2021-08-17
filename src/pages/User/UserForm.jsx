@@ -70,7 +70,7 @@ export default class UserForm extends Component {
                     rules={[
                         { required: true, message: '必须输入手机号' },
                         { min: 11, message: '手机号必须为11位' },
-                        { max: 11, message: '手机号必须为12位' },
+                        { max: 11, message: '手机号必须为1位' },
                         { pattern: /^[0-9_]+$/, message: '手机号必须为纯数字组成' }
                     ]}
                 >
@@ -81,7 +81,10 @@ export default class UserForm extends Component {
                     name="email"
                     rules={[
                         { required: true, message: '必须输入邮箱' },
-                        // { pattern: /^([a-zA-Z]|[0-9])(\w|\-)+@[a-zA-Z0-9]+\.([a-zA-Z]{2,4})$/, message: '请输入正确的邮箱格式' }
+                        { 
+                            pattern: /^[a-zA-Z0-9_.-]+@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*\.[a-zA-Z0-9]{2,6}$/,
+                            message: '请输入正确的邮箱格式' 
+                        }
                     ]}
                 >
                     <Input />

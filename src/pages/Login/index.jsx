@@ -1,61 +1,50 @@
 import React, { Component } from 'react';
 // 引入路由组件
 import { Redirect } from 'react-router-dom';
+// 引入connect
+import { connect } from 'react-redux';
 // 引入antd标签
 import { Form, Input, Button, message } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
-// 引入内存
-import memoryUtils from '../../utils/memoryUtils';
-import storageUtils from '../../utils/storageUtils';
-// 引入登录请求接口
-import {reqLogin} from '../../api'
+// 改用引入异步action
+import { login } from '../../redux/action';
 // 引入图片
 import logo from '../../assets/images/logo.png';
 // 引入样式
 import './index.less';
 
-export default class Login extends Component {
+class Login extends Component {
     // 创建ref以获取输入框的值
     formRef = React.createRef();
-    handleSubmit = (e) => {
+    handleSubmit = async (e) => {
         e.preventDefault();
-        this.formRef.current.validateFields()
-            .then(async values => {
-                // 此时的value可以获取form.Item中的值，并作为一个对象储存
-                // form.Item的name，即为value的属性名
-                // console.log(values);
-                const {username, password} = values;
-                // 调用登录请求函数，返回值为一个Promise对象
-                const result = await reqLogin(username, password);
-                // 防止连续点击导致出现多个message提示
-                message.destroy();
-                if (result.status === 0) {
-                    message.success('登陆成功');
-                    // 将user存储到内存中 将此语句
-                    memoryUtils.user = result.data;
-                    // 将数据存储在localStorage中
-                    storageUtils.saveUser(result.data);
-                    // 跳转去admin
-                    this.props.history.replace('/')
-                } else {
-                    message.error(result.msg);
-                }
-            })
-            .catch(errorInfo => {
-                // 统一验证的错误：errorInfo为一个对象
-                // console.log(errorInfo)
-                message.error('账号密码不符合要求！');
-            });
-
+        try {
+            const values = await this.formRef.current.validateFields()
+            // 此时的value可以获取form.Item中的值，并作为一个对象储存
+            // form.Item的name，即为value的属性名
+            const { username, password } = values;
+            await this.props.login(username, password);
+            // 因为login为异步请求，因此要加 await等待其结果
+            if (!this.props.user.errorMsg) {
+                message.success('登录成功！');
+            } else {
+                message.error('账号或密码输入错误！');
+            }
+        } catch (err) {
+            // 统一验证的错误：errorInfo为一个对象
+            console.log(err)
+            message.error('账号密码不符合要求！');
+        }
     }
     // componentWillUnmount = () => {
     //     reqLogin = null;
     // }
-    
+
     render() {
         // 保存登陆状态, 若用户已经登录则自动跳转到admin
-        if (memoryUtils.user && memoryUtils.user._id) {
-            return <Redirect to='/'/>;
+        const user = this.props.user;
+        if (user && user._id) {
+            return <Redirect to='/' />;
         }
         return (
             <div className='login'>
@@ -65,7 +54,7 @@ export default class Login extends Component {
                 </header>
                 <section className='login-content'>
                     <h3>用户登录</h3>
-                    <Form className="login-form" ref = {this.formRef}>
+                    <Form className="login-form" ref={this.formRef}>
                         <Form.Item name='username' rules={[
                             { required: true, message: '必须输入用户名' },
                             { min: 4, message: '用户名至少4位' },
@@ -104,3 +93,9 @@ export default class Login extends Component {
 // 1.前端表单验证
 // 2.收集表单数据
 // 废弃：const WrapLogin = Form.create()(Login)
+export default connect(
+    state => ({ user: state.user }),
+    {
+        login
+    }
+)(Login)
