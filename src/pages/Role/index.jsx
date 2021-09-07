@@ -122,9 +122,7 @@ class Role extends Component {
                 return expandedKeys;
             });
         }
-        this.setState({expandedKeys}, () => {
-            console.log(this.state.expandedKeys)
-        });
+        this.setState({expandedKeys});
     }
     UNSAFE_componentWillMount() {
         this.columns = [
@@ -172,27 +170,6 @@ class Role extends Component {
             <Card title={title}>
                 <Table
                     bordered
-                    rowSelection={{
-                        type: 'radio',
-                        onChange: (selectedRowKeys, selectedRows) => {
-                            // selectedRowKeys: 当前被选中行的key值, selectedRows：当前被选中行，为一个数组
-                            // 将设置权限按钮解封，并将当前选中行存入状态中
-                            this.setState({ disabled: false, currentRole: selectedRows[0] }, () => {
-                                // 在当前节点存入状态完毕后，将其所需要展开的树结构父节点也存入状态
-                                this.setExpandedKeys()
-                            });
-                        }
-                    }}
-                    onRow={currentRole => {
-                        return {
-                            onClick: event => {
-                                console.log(currentRole, this.selectedRows)
-                                console.log(event);
-                                event.checked = true
-                                this.setState({currentRole})
-                            }
-                        }
-                    }}
                     dataSource={roles}
                     columns={columns}
                     rowKey='_id'
@@ -201,6 +178,18 @@ class Role extends Component {
                         pageSize: PAGE_SIZE,
                         showQuickJumper: true,
                     }}
+                    rowSelection={{
+                        type: 'radio',
+                        onChange: (selected, selectedRows) => {
+                            // selectedRowKeys: 当前被选中行的key值, selectedRows：当前被选中行，为一个数组
+                            // 将设置权限按钮解封，并将当前选中行存入状态中
+                            this.setState({ disabled: false, currentRole: selectedRows[0] }, () => {
+                                // 在当前节点存入状态完毕后，将其所需要展开的树结构父节点也存入状态
+                                this.setExpandedKeys()
+                            });
+                        }
+                    }}
+
                 >
 
                 </Table>

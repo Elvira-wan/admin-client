@@ -3,23 +3,36 @@ import { Redirect, Switch, Route } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { Layout } from 'antd';
 // import memoryUtils from '../../utils/memoryUtils';
+// 引入异步加载组件的方法
+import asyncComponent from '../../utils/asyncComponent';
 // 引入自定义组件
 import Header from '../../components/Header';
 import LeftNav from '../../components/LeftNav';
-import Home from '../Home';
-import Category from '../Category';
-import Product from '../Product';
-import Role from '../Role';
-import User from '../User';
-import Bar from '../Charts/bar';
-import Line from '../Charts/line';
-import Pie from '../Charts/pie';
-import NotFound from '../Not-found';
+// import Home from '../Home';
+// import Category from '../Category';
+// import Product from '../Product';
+// import Role from '../Role';
+// import User from '../User';
+// import Bar from '../Charts/bar';
+// import Line from '../Charts/line';
+// import Pie from '../Charts/pie';
+// import NotFound from '../Not-found';
 
 import logo from '../../assets/images/logo.png'
 import './index.less'
 
 const { Content, Footer, Sider } = Layout;
+
+// 定义异步加载组件
+const AsyncHome = asyncComponent(() => import('../Home'));
+const AsyncCategory = asyncComponent(() => import('../Category'));
+const AsyncProduct = asyncComponent(() => import('../Product'));
+const AsyncRole = asyncComponent(() => import('../Role'));
+const AsyncUser = asyncComponent(() => import('../User'));
+const AsyncBar = asyncComponent(() => import('../Charts/bar'));
+const AsyncLine = asyncComponent(() => import('../Charts/line'));
+const AsyncPie = asyncComponent(() => import('../Charts/pie'));
+const AsyncNotFound = asyncComponent(() => import('../Not-found'));
 
 class Admin extends Component {
 
@@ -55,6 +68,15 @@ class Admin extends Component {
                             <Switch>
                                 {/* 在为输入路由且精确匹配时，显示home路由组件 */}
                                 <Redirect from='/' to='/home' exact/>
+                                <Route path='/home' component={AsyncHome} />
+                                <Route path='/category' component={AsyncCategory} />
+                                <Route path='/product' component={AsyncProduct} />
+                                <Route path='/role' component={AsyncRole} />
+                                <Route path='/user' component={AsyncUser} />
+                                <Route path='/charts/bar' component={AsyncBar} />
+                                <Route path='/charts/line' component={AsyncLine} />
+                                <Route path='/charts/pie' component={AsyncPie} />
+                                {/* <Redirect from='/' to='/home' exact/>
                                 <Route path='/home' component={Home} />
                                 <Route path='/category' component={Category} />
                                 <Route path='/product' component={Product} />
@@ -62,9 +84,10 @@ class Admin extends Component {
                                 <Route path='/user' component={User} />
                                 <Route path='/charts/bar' component={Bar} />
                                 <Route path='/charts/line' component={Line} />
-                                <Route path='/charts/pie' component={Pie} />
+                                <Route path='/charts/pie' component={Pie} /> */}
                                 {/* 当以上所有路径都不匹配，则显示NotFound404路由 */}
-                                <Route component={NotFound} />
+                                <Route component={AsyncNotFound} />
+                                {/* <Route component={NotFound} /> */}
                             </Switch>
                         </div>
                     </Content>

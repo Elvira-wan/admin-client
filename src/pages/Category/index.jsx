@@ -160,7 +160,7 @@ export default class Category extends Component {
 
     render() {
         // 解构state中数据
-        const { dataSource, subCategory, parentId, parentName, loading, confirmLoading, showLinkButton } = this.state
+        const { dataSource, subCategory, parentId, parentName, loading, confirmLoading, showLinkButton } = this.state;
         // Card显示内容
         // Card 左侧标题
         const title = parentId === '0' ? '一级分类列表' : (
@@ -244,12 +244,14 @@ export default class Category extends Component {
                     onOk={this.handleUpdate}
                     confirmLoading={confirmLoading}
                     onCancel={this.handleCancel}
+                    destroyOnClose      // 表示该组件每次重新加载都会重新更新
                 >
                     <Form ref={this.updateRef}>
                         <Form.Item
                             name="categoryName"
                             label="分类名称"
                             hasFeedback
+                            initialValue={this.category === undefined ? null : this.category.name}
                             rules={[
                                 {
                                     required: true,

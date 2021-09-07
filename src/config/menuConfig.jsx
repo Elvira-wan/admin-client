@@ -14,13 +14,12 @@ import {
 } from '@ant-design/icons'
 
 export default [{
-    title: '首页',
-    // 菜单标题名称 
-    key: '/home',
-    // 对应的 path 
-    icon: (<HomeOutlined />),
+    title: '首页',    // 菜单标题名称 
+    key: '/home',    // 对应的 path 
+    icon: (<HomeOutlined />),    // 图标名称 
     isPublic: true, // 公开的
-    // 图标名称 
+    disabled: true  // 在树形控件中设置为不可选
+    
 }, {
     title: '商品',
     key: '/products',

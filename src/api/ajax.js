@@ -25,6 +25,7 @@ export default (url, data = {}, type='GET') => {
 
         Promise.then(response => {
             // 2.如果成功，调用resolve()
+            console.log(response)
             resolve(response.data);
         }).catch(err => {
             // 3.重点：如果失败，不调用reject(reason)，而是显示异常信息
